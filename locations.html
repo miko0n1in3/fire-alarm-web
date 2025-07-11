@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sensor Units - Fire Alarm System</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+    }
+
+    header {
+      background-color: #d63031;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .notification-bar {
+      background-color: #ff4d4d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      display: none;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { background-color: #ff4d4d; }
+      50% { background-color: #ff1a1a; }
+      100% { background-color: #ff4d4d; }
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .unit-box {
+      background-color: #fff;
+      border-left: 6px solid #2ecc71;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: border-color 0.3s ease;
+      position: relative;
+    }
+
+    .unit-box.inactive {
+      border-left-color: #95a5a6;
+    }
+
+    .unit-box.alert {
+      border-left-color: #e74c3c;
+    }
+
+    .unit-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .unit-alert-bar {
+      display: none;
+      background-color: #ffcccc;
+      color: #b30000;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .unit-status {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .sensor {
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .sensor.alert {
+      background-color: #ffe6e6;
+      color: #c0392b;
+      font-weight: bold;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .trigger-btn, .reset-btn {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .trigger-btn {
+      background-color: #d63031;
+      color: white;
+    }
+
+    .trigger-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .reset-btn {
+      background-color: #3498db;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .reset-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .log-section {
+      margin: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .log-section h2 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Fire Alarm System - Sensor Units</header>
+  <div class="notification-bar" id="notification-bar"></div>
+
+  <div class="container">
+    <!-- Example Unit -->
+    <div class="unit-box" id="unitA">
+      <div class="unit-title">Unit A - Server Room</div>
+      <div class="unit-alert-bar" id="alertA"></div>
+      <div class="unit-status" id="statusA">Status: <strong>ACTIVE</strong> since 10:15 AM</div>
+      <div class="sensor">Humidity Sensor - OK</div>
+      <div class="sensor">Carbon Monoxide Sensor - OK</div>
+      <div class="sensor">Infrared Flame Sensor - OK</div>
+      <button class="trigger-btn" onclick="manualTrigger('A')">Manual Trigger</button>
+      <button class="reset-btn" onclick="resetUnit('A')">Reset</button>
+    </div>
+
+    <div class="unit-box" id="unitB">
+      <div class="unit-title">Unit B - Kitchen</div>
+      <div class="unit-alert-bar" id="alertB"></div>
+      <div class="unit-status" id="statusB">Status: <strong>ACTIVE</strong> since 9:00 AM</div>
+      <div class="sensor">Humidity Sensor - OK</div>
+      <div class="sensor">Carbon Monoxide Sensor - OK</div>
+      <div class="sensor">Infrared Flame Sensor - OK</div>
+      <button class="trigger-btn" onclick="manualTrigger('B')">Manual Trigger</button>
+      <button class="reset-btn" onclick="resetUnit('B')">Reset</button>
+    </div>
+
+    <div class="unit-box inactive" id="unitC">
+      <div class="unit-title">Unit C - Storage</div>
+      <div class="unit-alert-bar" id="alertC"></div>
+      <div class="unit-status" id="statusC">Status: <strong>INACTIVE</strong> as of 7:30 AM</div>
+      <div class="sensor">Humidity Sensor - No Data</div>
+      <div class="sensor">Carbon Monoxide Sensor - No Data</div>
+      <div class="sensor">Infrared Flame Sensor - No Data</div>
+      <button class="trigger-btn" onclick="manualTrigger('C')">Manual Trigger</button>
+      <button class="reset-btn" onclick="resetUnit('C')">Reset</button>
+    </div>
+
+    <div class="unit-box" id="unitD">
+      <div class="unit-title">Unit D - Entrance</div>
+      <div class="unit-alert-bar" id="alertD"></div>
+      <div class="unit-status" id="statusD">Status: <strong>ACTIVE</strong> since 8:50 AM</div>
+      <div class="sensor">Humidity Sensor - OK</div>
+      <div class="sensor">Carbon Monoxide Sensor - OK</div>
+      <div class="sensor">Infrared Flame Sensor - OK</div>
+      <button class="trigger-btn" onclick="manualTrigger('D')">Manual Trigger</button>
+      <button class="reset-btn" onclick="resetUnit('D')">Reset</button>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="log-section">
+    <h2>Trigger History</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Unit</th>
+          <th>Type</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="logTable">
+        <!-- Logs will be added here -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Alert Sound -->
+  <audio id="alertSound">
+    <source src="alert.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    function getTimeNow() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
+    function manualTrigger(unit) {
+      const unitBox = document.getElementById(`unit${unit}`);
+      const alertBar = document.getElementById(`alert${unit}`);
+      const statusText = document.getElementById(`status${unit}`);
+      const notifBar = document.getElementById("notification-bar");
+      const alertSound = document.getElementById("alertSound");
+      const timeNow = getTimeNow();
+
+      unitBox.classList.add("alert");
+      unitBox.classList.remove("inactive");
+
+      statusText.innerHTML = `Status: <strong>ACTIVE</strong> - Manual trigger at ${timeNow}`;
+      alertBar.style.display = "block";
+      alertBar.textContent = `⚠️ Manual trigger activated at ${timeNow}`;
+      notifBar.style.display = "block";
+      notifBar.textContent = `⚠️ MANUAL TRIGGER: Unit ${unit} activated at ${timeNow}`;
+      alertSound.currentTime = 0;
+      alertSound.play();
+
+      logTrigger(unit, "Manual", timeNow);
+    }
+
+    function resetUnit(unit) {
+  const unitBox = document.getElementById(`unit${unit}`);
+  const alertBar = document.getElementById(`alert${unit}`);
+  const statusText = document.getElementById(`status${unit}`);
+  const alertSound = document.getElementById("alertSound");
+
+  // Stop sound
+  alertSound.pause();
+  alertSound.currentTime = 0;
+
+  // Reset visuals
+  unitBox.classList.remove("alert");
+  alertBar.style.display = "none";
+
+  // Update status
+  statusText.innerHTML = `Status: <strong>ACTIVE</strong> since ${getTimeNow()}`;
+}
+
+    function logTrigger(unit, type, time) {
+      const logTable = document.getElementById("logTable");
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>Unit ${unit}</td><td>${type}</td><td>${time}</td>`;
+      logTable.prepend(row);
+    }
+  </script>
+
+</body>
+</html>
